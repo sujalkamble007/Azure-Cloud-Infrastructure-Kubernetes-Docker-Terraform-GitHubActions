@@ -17,9 +17,9 @@ data:
     global:
       resolve_timeout: 5m
       smtp_smarthost: smtp.gmail.com:587
-      smtp_from: alexvidaldepalol@gmail.com
-      smtp_auth_username: alexvidaldepalol@gmail.com
-      smtp_auth_identity: alexvidaldepalol@gmail.com
+      smtp_from: kamblesujal000@gmail.com
+      smtp_auth_username: kamblesujal000@gmail.com
+      smtp_auth_identity: kamblesujal000@gmail.com
       smtp_auth_password_file: /etc/alertmanager/secrets/smtp-password
       smtp_require_tls: true
 
@@ -36,5 +36,5 @@ data:
     receivers:
       - name: email-alerts
         email_configs:
-          - to: alexvidaldepalol@gmail.com
+          - to: kamblesujal000@gmail.com
             send_resolved: true

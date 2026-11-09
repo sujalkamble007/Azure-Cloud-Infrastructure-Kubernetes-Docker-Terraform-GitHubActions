@@ -13,10 +13,10 @@ terraform {
   # Use AzureRM backend for remote state storage.
   backend "azurerm" {
     # Resource Group that contains the storage account for tfstate.
-    resource_group_name = "alexdevops99-tfstate-rg"
+    resource_group_name = "sujalkamble07-tfstate-rg"
 
     # Storage Account where Terraform state is persisted.
-    storage_account_name = "alexdevops99tfstate01"
+    storage_account_name = "sujalkamble07tfstate01"
 
     # Blob container that stores state files.
     container_name = "tfstate"

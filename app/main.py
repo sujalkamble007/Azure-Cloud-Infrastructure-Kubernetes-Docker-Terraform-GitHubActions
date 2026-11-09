@@ -34,10 +34,10 @@ SUPPORTED_QUOTES = {
 app = FastAPI(
     title="Market Quote API",
     description=(
-        "Synthetic market quote API used to demonstrate cloud-native delivery, "
-        "security, and operations on Azure."
+        "Production-ready synthetic market quote service designed for "
+        "cloud-native delivery, security hardening, and observability on Azure."
     ),
-    version="1.1.0",
+    version="1.0.0",
 )
 
 # Expose Prometheus metrics at /metrics (not part of the OpenAPI schema).

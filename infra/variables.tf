@@ -6,7 +6,7 @@
 variable "project_name" {
   description = "Base name used as prefix for all Azure resources."
   type        = string
-  default     = "alexdevops99"
+  default     = "sujalkamble07"
 }
 
 # Azure region where the resources will be created.

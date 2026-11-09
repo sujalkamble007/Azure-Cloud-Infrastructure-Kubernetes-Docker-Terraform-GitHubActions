@@ -1,17 +1,13 @@
 # FastAPI on Azure with Terraform, AKS, and GitHub Actions
 
-[![Validate](https://github.com/alexvidi/Azure-Cloud-Infrastructure-Kubernetes-Docker-Terraform-GitHubActions/actions/workflows/validate.yml/badge.svg?branch=master)](https://github.com/alexvidi/Azure-Cloud-Infrastructure-Kubernetes-Docker-Terraform-GitHubActions/actions/workflows/validate.yml)
+[![Validate](https://github.com/sujalkamble007/Azure-Cloud-Infrastructure-Kubernetes-Docker-Terraform-GitHubActions/actions/workflows/validate.yml/badge.svg?branch=master)](https://github.com/sujalkamble007/Azure-Cloud-Infrastructure-Kubernetes-Docker-Terraform-GitHubActions/actions/workflows/validate.yml)
 [![Terraform](https://img.shields.io/badge/IaC-Terraform-623CE4?logo=terraform)](https://www.terraform.io/)
 [![Azure](https://img.shields.io/badge/Cloud-Azure-0089D6?logo=microsoftazure)](https://azure.microsoft.com/)
 [![Kubernetes](https://img.shields.io/badge/Orchestration-Kubernetes-326CE5?logo=kubernetes)](https://kubernetes.io/)
 
-**A production-style delivery platform for a small FastAPI service: Terraform-provisioned Azure infrastructure, keyless OIDC CI/CD, hardened Kubernetes on AKS, and Prometheus/Alertmanager/Grafana observability — deployed end-to-end and fully documented below.**
+**A production-style delivery platform for a small FastAPI service: Terraform-provisioned Azure infrastructure, keyless OIDC CI/CD, hardened Kubernetes on AKS, and Prometheus/Alertmanager/Grafana observability — designed and structured for end-to-end cloud delivery.**
 
-The application is intentionally simple; the focus of this repository is the platform around it. Features that were not justified by the current workload were deliberately left out so the repository reflects the technologies that are actually being used.
-
-> **Project status:** the Azure environment is provisioned and destroyed per validated run to control cost. The complete end-to-end run is documented in [Proof of Run](#proof-of-run) and the [Full Run Gallery](#full-run-gallery).
-
-> **Multi-cloud sibling:** the same platform implemented on AWS — EKS, ECR, IAM OIDC, and EKS Access Entries — lives in [AWS-Cloud-Infrastructure-Kubernetes-Docker-Terraform-GitHubActions](https://github.com/alexvidi/AWS-Cloud-Infrastructure-Kubernetes-Docker-Terraform-GitHubActions).
+The application is intentionally lightweight; the focus of this repository is the platform around it: infrastructure as code, containerization, Kubernetes orchestration, pipeline automation, security hardening, and observability.
 
 ![Project flow overview](docs/project-flow-overview.svg)
 
@@ -27,31 +23,6 @@ The application is intentionally simple; the focus of this repository is the pla
 | CI/CD | GitHub Actions validate and deploy workflows, authenticated to Azure via OIDC |
 | Security | Pod Security Admission, container hardening, Cilium NetworkPolicy enforcement, managed identities, Azure RBAC, Trivy, Checkov |
 | Observability | Prometheus + Alertmanager + Grafana in-cluster, plus Log Analytics for AKS control plane and ACR logs |
-
-## Proof of Run
-
-<table>
-  <tr>
-    <td width="50%">
-      <img src="docs/screenshots/ci-deploy-job-success.png" alt="Deploy workflow" width="100%"/><br/>
-      <sub><b>CI/CD:</b> build → Trivy scan → ACR push → AKS rollout → smoke test, all green.</sub>
-    </td>
-    <td width="50%">
-      <img src="docs/screenshots/infra-aks-cluster-overview.png" alt="AKS cluster overview" width="100%"/><br/>
-      <sub><b>AKS:</b> the managed cluster provisioned by Terraform and linked to the container registry.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <img src="docs/screenshots/obs-grafana-dashboard-requests.png" alt="Grafana dashboard" width="100%"/><br/>
-      <sub><b>Observability:</b> live request rate, latency, and status-code metrics in Grafana.</sub>
-    </td>
-    <td width="50%">
-      <img src="docs/screenshots/app-quote-btc-response.png" alt="Quote endpoint" width="100%"/><br/>
-      <sub><b>Application:</b> <code>/quote</code> served through the Kubernetes ingress public IP.</sub>
-    </td>
-  </tr>
-</table>
 
 ## Architecture
 
@@ -144,7 +115,7 @@ app/                FastAPI application and Dockerfile
 infra/              Terraform root and modules (network, registry, aks, monitoring)
 k8s/                Raw Kubernetes manifests
 .github/workflows/  Validation and deployment pipelines
-docs/               Architecture diagram and project screenshots
+docs/               Architecture diagrams
 ```
 
 ## Main Components
@@ -224,19 +195,19 @@ The backend in [infra/backend.tf](infra/backend.tf) stores state in Azure Blob S
 
 ```bash
 az group create \
-  --name alexdevops99-tfstate-rg \
+  --name sujalkamble07-tfstate-rg \
   --location eastus
 
 az storage account create \
-  --name alexdevops99tfstate01 \
-  --resource-group alexdevops99-tfstate-rg \
+  --name sujalkamble07tfstate01 \
+  --resource-group sujalkamble07-tfstate-rg \
   --location eastus \
   --sku Standard_LRS \
   --kind StorageV2
 
 az storage container create \
   --name tfstate \
-  --account-name alexdevops99tfstate01 \
+  --account-name sujalkamble07tfstate01 \
   --auth-mode login
 ```
 
@@ -269,18 +240,18 @@ Note the outputs: `resource_group_name`, `acr_login_server`, `aks_cluster_name`.
 ### 3. Build and Push the Image
 
 ```bash
-az acr login --name alexdevops99acr
+az acr login --name sujalkamble07acr
 
-docker build -t alexdevops99acr.azurecr.io/market-quote-api:v1 app
-docker push alexdevops99acr.azurecr.io/market-quote-api:v1
+docker build -t sujalkamble07acr.azurecr.io/market-quote-api:v1 app
+docker push sujalkamble07acr.azurecr.io/market-quote-api:v1
 ```
 
 ### 4. Connect kubectl to AKS
 
 ```bash
 az aks get-credentials \
-  --resource-group alexdevops99-rg \
-  --name alexdevops99-aks \
+  --resource-group sujalkamble07-rg \
+  --name sujalkamble07-aks \
   --overwrite-existing
 ```
 
@@ -348,116 +319,9 @@ Deliberate scope cuts for a coherent demo, and what the next iteration would add
 - **Monitoring durability** — in-cluster Prometheus stores data in an `emptyDir`. Next: persistent storage, `kube-state-metrics`, or Azure Monitor managed service for Prometheus.
 - **Raw manifests** — transparent for review, but Helm or Kustomize overlays would be the natural step for multi-environment deploys.
 
-## Full Run Gallery
-
-Every screenshot below documents a single end-to-end Azure run of the project before the cloud resources were deprovisioned to control cost.
-
-<details>
-<summary><b>Infrastructure — resource group, AKS, ACR, networking</b></summary>
-
-![Azure resource group and provisioned resources](docs/screenshots/infra-azure-resources.png)
-The resource group with the core Azure resources created by Terraform: AKS, ACR, VNet, NSG, and Log Analytics.
-
-![AKS cluster overview](docs/screenshots/infra-aks-cluster-overview.png)
-The AKS overview confirms the managed cluster was provisioned successfully and linked to the container registry used by the deployment pipeline.
-
-![AcrPull role assignment](docs/screenshots/infra-acr-pull-role.png)
-The `AcrPull` role assignment that lets the AKS kubelet identity pull images from ACR without registry passwords.
-
-![Ingress public IP](docs/screenshots/infra-ingress-public-ip.png)
-The public IP assigned to the `ingress-nginx` load balancer — the public entry point to the application.
-
-![Terraform state container](docs/screenshots/infra-terraform-state-container.png)
-The Terraform remote state stored in an Azure Blob Storage container.
-
-</details>
-
-<details>
-<summary><b>CI/CD — Validate and Deploy workflows</b></summary>
-
-![GitHub Actions workflows](docs/screenshots/ci-actions-overview.png)
-The Validate and Deploy workflows in GitHub Actions.
-
-![Validate workflow completed successfully](docs/screenshots/ci-validate-workflow-success.png)
-Validation passing application checks, Terraform validation, Checkov IaC security, and Kubernetes manifest schema validation.
-
-![Deploy workflow summary](docs/screenshots/ci-deploy-workflow-summary.png)
-The deploy workflow summary: change detection, build and scan, and the manifest rollout to AKS.
-
-![Deploy job completed successfully](docs/screenshots/ci-deploy-job-success.png)
-A deploy run completing image build, ACR push, manifest rollout, and the post-deploy smoke test.
-
-</details>
-
-<details>
-<summary><b>Application — served through the ingress</b></summary>
-
-![Swagger UI exposed through the ingress](docs/screenshots/app-browser-swagger-ui.png)
-The Swagger UI reachable through the Kubernetes ingress from a browser.
-
-![Swagger UI](docs/screenshots/app-swagger-ui.png)
-The OpenAPI documentation generated by FastAPI for the deployed service.
-
-![Health endpoint](docs/screenshots/app-health-check-response.png)
-The `/health` endpoint used by Kubernetes probes and the post-deploy smoke test.
-
-![Quote endpoint](docs/screenshots/app-quote-btc-response.png)
-The `/quote` endpoint returning a synthetic market quote for a supported symbol.
-
-![Unsupported symbol](docs/screenshots/app-quote-unsupported-symbol.png)
-An unsupported symbol returns a controlled `400` with the list of supported symbols.
-
-</details>
-
-<details>
-<summary><b>Kubernetes — application and monitoring resources</b></summary>
-
-![Application resources](docs/screenshots/k8s-market-quote-resources.png)
-Application resources in the `market-quote` namespace: pods, Service, Deployment, and the HPA.
-
-![Service and Ingress](docs/screenshots/k8s-market-quote-service-ingress.png)
-The application Service and Ingress routing external traffic into the namespace.
-
-![Ingress and PDB](docs/screenshots/k8s-market-quote-ingress-pdb.png)
-The application Ingress and PodDisruptionBudget.
-
-![Monitoring resources](docs/screenshots/k8s-monitoring-resources.png)
-Prometheus, Grafana, and Alertmanager resources in the `monitoring` namespace.
-
-![Monitoring workloads and services](docs/screenshots/k8s-monitoring-workloads-services.png)
-Monitoring workloads and Services running in the `monitoring` namespace.
-
-</details>
-
-<details>
-<summary><b>Observability — Prometheus, Grafana, Log Analytics</b></summary>
-
-![Prometheus targets](docs/screenshots/obs-prometheus-targets-up.png)
-Prometheus scrapes the application metrics endpoint successfully (target `UP`).
-
-![Grafana dashboard overview](docs/screenshots/obs-grafana-dashboard-overview.png)
-The provisioned Market Quote API dashboard in Grafana.
-
-![Grafana request metrics](docs/screenshots/obs-grafana-dashboard-requests.png)
-Live request rate, latency, and status-code metrics collected from the running application.
-
-![Log Analytics overview](docs/screenshots/obs-log-analytics-overview.png)
-The Log Analytics workspace receiving AKS control plane logs through diagnostic settings.
-
-![Log Analytics insights](docs/screenshots/obs-log-analytics-insights.png)
-Querying cluster logs in the Log Analytics workspace.
-
-![AKS Insights](docs/screenshots/obs-aks-insights-summary.png)
-The AKS Insights summary for the cluster in Azure Monitor.
-
-![ACR events](docs/screenshots/obs-acr-push-pull-events.png)
-ACR image push and pull events shipped to Log Analytics.
-
-</details>
-
 ## Author
 
-**Alexandre Vidal**
-Email: alexvidaldepalol@gmail.com
-[LinkedIn](https://www.linkedin.com/in/alexvidi/)
-[GitHub](https://github.com/alexvidi)
+**Sujal Kamble**
+Email: kamblesujal000@gmail.com
+[LinkedIn](https://www.linkedin.com/in/sujalkamble007/)
+[GitHub](https://github.com/sujalkamble007)
